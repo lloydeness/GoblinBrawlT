@@ -205,7 +205,7 @@ void Skeleton::InitPhysics( PhysicsWorld* _physicsWorld ) {
 	btDefaultMotionState* myMotionState = new btDefaultMotionState( btTran );
 	btRigidBody::btRigidBodyConstructionInfo rbInfo( 0., myMotionState, shape, btVector3( 0, 0, 0 ) );
 	btRigidBody* body = new btRigidBody( rbInfo );
-	body->setCollisionFlags( btCollisionObject::CF_NO_CONTACT_RESPONSE );
+	body->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
 	body->setActivationState( DISABLE_DEACTIVATION ); // this need to happen when the object is moved
 	short group = COLLIDE_MASK::NOTHING;
 	short mask = COLLIDE_MASK::NOTHING;
@@ -273,8 +273,10 @@ void Skeleton::CreateBoneShape( SHAPE shapeName, Bone* target, float radius ) {
 	btScalar btLength( length );
 	shapeLengths[shapeName] = length;
 	btConvexShape* shape = new btCapsuleShapeX( radius, length );
+	 
 	physicsWorld->AddCollisionShape( shape );
 	shapes[shapeName] = shape;
+	
 }
 
 void Skeleton::CreateAllBodies() {
@@ -457,9 +459,11 @@ btRigidBody* Skeleton::CreateBoneBody( Bone* bone, Bone* target, btConvexShape* 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState( bone->btInitialBody );
 	btRigidBody::btRigidBodyConstructionInfo rbInfo( mass, myMotionState, shape, localInertia );
 	btRigidBody* body = new btRigidBody( rbInfo );
-	short group = COLLIDE_MASK::PLAYER_BODY;
-	short mask = COLLIDE_MASK::GROUND|COLLIDE_MASK::FIRE_PLINTH;
+	short group = COLLIDE_MASK::PLAYER_BODY;	
+	
+	short mask = COLLIDE_MASK::GROUND|COLLIDE_MASK::FIRE_PLINTH|COLLIDE_MASK::PLAYER_BODY;
 	physicsWorld->World()->addRigidBody( body, group, mask );
+	
 	return body;
 }
 
@@ -838,7 +842,11 @@ btRigidBody* Skeleton::localCreateRigidBody( float mass, const btTransform& star
 	btDefaultMotionState* myMotionState = new btDefaultMotionState( startTransform );
 	btRigidBody::btRigidBodyConstructionInfo rbInfo( mass, myMotionState, shape, localInertia );
 	btRigidBody* body = new btRigidBody( rbInfo );
+	btCollisionObject* colObj = new btCollisionObject();
+
 	physicsWorld->World()->addRigidBody( body );
+
+	colObj = body;
 	return body;
 }
 
@@ -1404,3 +1412,17 @@ void Skeleton::DirtyBones() {
 btVector3 RagdollDemo::pointWorldToLocal( int bodyIndex, btVector3 worldPoint ) {
 return body[bodyIndex]->getCenterOfMassTransform().inverse()(worldPoint);
 }*/
+
+
+btRigidBody* Skeleton::getRidgetBody()
+{
+	btRigidBody* temp = bodies[13];
+	return temp;
+}
+
+
+PhysicsWorld* Skeleton::getPhysicsWorld()
+{
+
+	return physicsWorld;
+}

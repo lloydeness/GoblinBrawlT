@@ -2,10 +2,18 @@
 #include "DirectX_11_1_Includes.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletDynamics\MLCPSolvers\btDantzigSolver.h"
+#include <vector>
+
+
+
+
+
 
 //#define PHYSICS_DEBUG_MODE
 
 class PhysicsDebugDrawer;
+class btCollisionWorld;
+class btCollisionObject;
 
 enum COLLIDE_MASK {
 	NOTHING = 0,
@@ -29,6 +37,7 @@ public:
 	void XM_CALLCONV DrawDebug( DirectX::FXMMATRIX viewProj );
 	inline btBroadphaseInterface* getPairCache() { return overlappingPairCache; };
 	const float								fixedTimeStep = 1.f/60.f;
+	btCollisionWorld* getCollisionsWorld();
 private:
 	void CleanUpDemo();
 	btDefaultCollisionConfiguration*		collisionConfiguration;
@@ -36,6 +45,8 @@ private:
 	btBroadphaseInterface*					overlappingPairCache;
 	btSequentialImpulseConstraintSolver*	solver;
 	btDiscreteDynamicsWorld*				dynamicsWorld;
+	btCollisionWorld*                           collisionworld;
+
 
 	//keep track of the shapes, we release memory at exit.
 	//make sure to re-use collision shapes among rigid bodies whenever possible!

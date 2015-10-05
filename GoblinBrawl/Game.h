@@ -16,7 +16,11 @@
 
 class PhysicsWorld;
 
+
 #define MAX_LOADSTRING 100
+
+
+
 
 class Game {
 public:
@@ -64,6 +68,9 @@ private:
 	Goblin								goblin;
 	Goblin								goblin2;
 	PhysicsWorld*						physicsWorld;
+	btCollisionWorld*					goblin1Collision;
+	btCollisionWorld*					goblin2Collision;
+	
 	std::unique_ptr<DirectX::Keyboard>	keyboard;
 	std::unique_ptr<
 		DirectX::Keyboard
