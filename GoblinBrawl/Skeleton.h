@@ -126,6 +126,9 @@ public:
 	btRigidBody* localCreateRigidBody( float mass, const btTransform& startTransform, btCollisionShape* shape );
 	void SetAnimationController( AnimationController* animationController );
 	void Update( float dt );
+	btRigidBody* getRidgetBody();
+	PhysicsWorld* getPhysicsWorld();
+
 private:
 	void UpdateLocalTransformsFromAnimation();
 	void UpdateLocalTransformsFromRagdoll();
@@ -142,6 +145,7 @@ private:
 	void SetAllMotors(float dt);
 	btTransform XM_CALLCONV XMMatrixToBTTransform( DirectX::FXMMATRIX m, bool fbxCorrection );
 	void DirtyBones();
+
 	int									numBones;
 	std::map<int, Bone*>				idxBones;
 	std::map<std::string, Bone*>		nameBones;
@@ -153,6 +157,7 @@ private:
 	btScalar							shapeLengths[SHAPE_COUNT];
 	btRigidBody*						bodies[BODY_COUNT];
 	btTypedConstraint*					joints[JOINT_COUNT];
+	btCollisionObject*					collisionObjects[BODY_COUNT];
 	MotorData*							motors[JOINT_COUNT];
 	AnimationController*				animationController;
 	bool								useRagdoll;

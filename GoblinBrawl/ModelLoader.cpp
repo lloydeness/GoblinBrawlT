@@ -52,11 +52,13 @@ bool ModelLoader::Load( std::string filename, Vertex::VERTEX_TYPE type ) {
 	aiMesh* sceneMesh = scene->mMeshes[0];
 	CreateVertexBuffer( sceneMesh, type );
 	CreateIndexBuffer( sceneMesh->mFaces, sceneMesh->mNumFaces );
+	
 	if( scene->HasAnimations() ) {
 		CreateSkeleton( sceneMesh->mBones, sceneMesh->mNumBones );
 		CreateBoneHierarchy();
 		CreateAnimations();
 	}
+	
 	return true;
 }
 

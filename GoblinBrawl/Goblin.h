@@ -5,6 +5,8 @@
 #include "GamePad.h"
 #include "FSM.h"
 #include "AnimationController.h"
+#include "Bullet/BulletCollision/CollisionDispatch/btGhostObject.h"
+
 
 struct ID3DX11Effect;
 struct ID3DX11EffectTechnique;
@@ -20,6 +22,7 @@ struct ID3D11Device;
 class PhysicsWorld;
 class btKinematicCharacterController;
 class btPairCachingGhostObject;
+
 
 class Goblin {
 public:
@@ -40,6 +43,7 @@ public:
 	DirectX::FXMMATRIX XM_CALLCONV GetWorld();
 	void ResetActions();
 	bool getLifeStatus();
+	Skeleton* getSkeleton();
 private:
 	struct Actions {
 		bool Forward;
@@ -110,13 +114,16 @@ private:
 	DirectX::XMMATRIX							modelControllerOffset;
 	DirectX::Keyboard::KeyboardStateTracker*	kb;
 	DirectX::GamePad*							gamePad;
+
+	btCollisionWorld*							collisionworld;
 	Actions										action;
-	PhysicsWorld*								physicsWorld;
+	PhysicsWorld*	        					physicsWorld;
 	btKinematicCharacterController*				controller;
 	btPairCachingGhostObject*					ghostObject;
 	FSM<Goblin>*								fsm;
 	float										movementBearing;
 	AnimationController							animController;
+	
 
 	//Player movement
 	DirectX::XMFLOAT2							moveDir;
@@ -136,3 +143,27 @@ private:
 	bool										isAlive;
 };
 
+struct PlayerContactResultCallback : public btCollisionWorld::ContactResultCallback {
+
+	PlayerContactResultCallback(btCollisionObject &player_collision_obj)
+		: btCollisionWorld::ContactResultCallback(),
+		m_player_collision_obj(player_collision_obj),
+		hit(false),
+		distance(0.0) {
+	}
+	btCollisionObject& m_player_collision_obj;
+	bool hit;
+	float distance;
+
+	virtual btScalar addSingleResult(btManifoldPoint& cp,
+		const btCollisionObjectWrapper* colObj0, int partId0, int index0,
+		const btCollisionObjectWrapper* colObj1, int partId1, int index1)
+	{
+		if (colObj0->m_collisionObject == &m_player_collision_obj)  {
+			hit = true;
+			distance = (float)cp.getDistance();
+			std::printf("collide dist: %f\n", distance);
+		}
+		return 0; 
+	}
+};

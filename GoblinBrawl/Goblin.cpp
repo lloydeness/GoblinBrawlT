@@ -10,7 +10,11 @@
 #include "PhysicsWorld.h"
 #include "Bullet/BulletDynamics/Character/btKinematicCharacterController.h"
 #include "Bullet/BulletCollision/CollisionDispatch/btGhostObject.h"
+
 #include "SharedResources.h"
+
+
+
 
 using namespace DirectX;
 
@@ -58,9 +62,9 @@ bool Goblin::Init( ModelLoader* modelLoader, ID3D11Device* device, Keyboard::Key
 	XMFLOAT4 goblinPos;
 	if( player==PLAYER_1 ) {
 		//goblinPos = XMFLOAT4( 0.f, 4.f, 0.f, 1.0f );
-		goblinPos = XMFLOAT4( 0.f, 4.f, 0.f, 1.0f );
+		goblinPos = XMFLOAT4( -1.f, 4.f, 10.f, 1.0f );
 	} else {
-		goblinPos = XMFLOAT4( 8.f, 5.f, 0.f, 1.0f );
+		goblinPos = XMFLOAT4( 1.f, 5.f, 10.f, 1.0f );
 	}
 	XMVECTOR xmVectorPos = XMLoadFloat4( &goblinPos );
 	SetPos( xmVectorPos );
@@ -98,8 +102,18 @@ bool Goblin::Init( ModelLoader* modelLoader, ID3D11Device* device, Keyboard::Key
 	controller->setJumpSpeed( btScalar( jumpSpeed ) );
 	controller->setMaxJumpHeight( btScalar( maxJumpHeight ) );
 	//physicsWorld->World()->addCollisionObject( ghostObject, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter|btBroadphaseProxy::DefaultFilter );
-	physicsWorld->World()->addCollisionObject( ghostObject, COLLIDE_MASK::PLAYER_CONTROLLER, COLLIDE_MASK::GROUND );
+	
+
+	//physicsWorld->World()->addCollisionObject(ghostObject, COLLIDE_MASK::PLAYER_CONTROLLER, COLLIDE_MASK::GROUND);
+	
+	physicsWorld->World()->addCollisionObject(ghostObject, COLLIDE_MASK::PLAYER_CONTROLLER, COLLIDE_MASK::PLAYER_BODY | COLLIDE_MASK::FIRE_PLINTH | COLLIDE_MASK::GROUND);
+	
+
 	physicsWorld->World()->addAction( controller );
+
+	collisionworld = physicsWorld->World()->getCollisionWorld();
+
+	
 
 	modelControllerOffset = XMMatrixTranslation( 0.f, -(controllerHeight*0.5f+controllerWidth), 0.f ); // offset y by height and width because width is the sphere on the end of the capsule
 
@@ -165,11 +179,37 @@ void Goblin::Update( float dt ) {
 	fsm->Update( dt );
 	skeleton->SetRootTransform( GetWorld() );
 	skeleton->Update( dt );
-	animController.Interpolate( dt );
+	// not used right now and slows framerate
+	//animController.Interpolate( dt );
+
+	
+	collisionworld->performDiscreteCollisionDetection();
+
+	int size = collisionworld->getNumCollisionObjects();
+
+	PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*collisionworld->getCollisionObjectArray().at(26));
+	
+	
+	//collisionworld->contactTest(collisionworld->getCollisionObjectArray().at(13), resultCallback);
+
+	collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(26), collisionworld->getCollisionObjectArray().at(27), resultCallback);
+
+	if (resultCallback.hit)
+	{
+
+		int dosomething = 5;
+
+	}
+	
+	//btColl
 	UpdateModelTransforms();
 	}
 }
 
+
+	
+
+	
 void Goblin::UpdateController( float dt ) {
 	btTransform controllerTransform;
 	controllerTransform = ghostObject->getWorldTransform();
@@ -618,4 +658,10 @@ void Goblin::Attack_Jump_After( float dt ) {
 bool Goblin::getLifeStatus()
 {
 	return isAlive;
+}
+
+Skeleton* Goblin::getSkeleton()
+{
+
+	return skeleton;
 }

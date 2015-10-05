@@ -4,6 +4,7 @@
 #include "BulletDynamics\MLCPSolvers\btDantzigSolver.h"
 #include "BulletDynamics\MLCPSolvers\btSolveProjectedGaussSeidel.h"
 #include "BulletDynamics\MLCPSolvers\btMLCPSolver.h"
+#include "Bullet/BulletCollision/CollisionDispatch/btCollisionWorld.h"
 
 using namespace DirectX;
 
@@ -46,6 +47,9 @@ bool PhysicsWorld::Init() {
 	}
 
 	//m_dynamicsWorld->setConstraintSolver( m_solver );
+
+
+	collisionworld = new btCollisionWorld(dispatcher, overlappingPairCache, collisionConfiguration);
 
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
 	solver = new btSequentialImpulseConstraintSolver;
@@ -128,11 +132,19 @@ void PhysicsWorld::RunDemo() {
 		btTransform trans;
 		if( body && body->getMotionState() ) {
 			body->getMotionState()->getWorldTransform( trans );
+
+			
+		//	dynamicsWorld->contactTest(obj, );
 		} else {
 			trans = obj->getWorldTransform();
 		}
 		//fprintf( stdout, "world pos object %d = %f,%f,%f\n", i, float( trans.getOrigin().getX() ), float( trans.getOrigin().getY() ), float( trans.getOrigin().getZ() ) );
 	}
+	
+	
+
+
+
 }
 
 void PhysicsWorld::CleanUpDemo() {
@@ -173,4 +185,10 @@ void XM_CALLCONV PhysicsWorld::DrawDebug( FXMMATRIX viewProj ) {
 	debugDrawer->Begin( viewProj );
 	dynamicsWorld->debugDrawWorld();
 	debugDrawer->End();
+}
+
+btCollisionWorld* PhysicsWorld::getCollisionsWorld()
+{
+
+	return collisionworld;
 }

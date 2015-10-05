@@ -10,6 +10,9 @@
 #include "Vertex.h"
 #include "PhysicsWorld.h"
 #include "SharedResources.h"
+#include "Skeleton.h"
+#include "Bullet/BulletCollision/CollisionDispatch/btCollisionWorld.h"
+
 
 #define DISPLAY_FPS
 
@@ -75,12 +78,16 @@ bool Game::Init() {
 	InputLayouts::InitAll( d3DDevice );
 	physicsWorld = new PhysicsWorld();
 	physicsWorld->Init( d3DImmediateContext );
-	keyboard = std::unique_ptr<Keyboard>( new Keyboard );
+
+	keyboard = std::unique_ptr<Keyboard>(new Keyboard);
 	kbTracker = std::unique_ptr<Keyboard::KeyboardStateTracker>( new Keyboard::KeyboardStateTracker );
 	gamePad = std::unique_ptr<GamePad>( new GamePad );
 	if( !LoadGameObjects() ) {
 		return false;
 	}
+	
+	//goblin1Collision = goblin.getCollisionworld();
+	//goblin2Collision = goblin2.getCollisionworld();
 	return true;
 }
 
@@ -454,10 +461,12 @@ bool Game::LoadGameObjects() {
 		fprintf( stderr, "Error initiating goblin" );
 		return false;
 	}
+	
 	if (!goblin2.Init(&loader, d3DDevice, kbTracker.get(), gamePad.get(), Goblin::PLAYER_2, physicsWorld)) {
 		fprintf(stderr, "Error initiating goblin");
 		return false;
 	}
+	
 	return true;
 }
 
@@ -469,17 +478,52 @@ void Game::Update( float dt ) {
 	goblin.Update( dt );
 	goblin2.Update(dt);
 
-	physicsWorld->Update( dt );
+	physicsWorld->Update(dt);
 	physicsWorld->RunDemo();
+	
+
+
+
+	/*
+
+	int something1 = goblin1Collision->getNumCollisionObjects();
+	int something2 = goblin2Collision->getNumCollisionObjects();
+
+	
+	PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*goblin1Collision->getCollisionObjectArray().at(1));
+	goblin1Collision->contactTest(goblin1Collision->getCollisionObjectArray().at(1), resultCallback);
+
+	//collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(1), collisionworld->getCollisionObjectArray().at(26), resultCallback);
+
+
+	if (resultCallback.hit)
+	{
+
+		int dosomething = 5;
+
+	}
+	
+	
+
+	*/
+
+
+
+	
+//	collisionworld->contactPairTest(gob1, gob2, callback);
 	camera.Update( dt );
 	camera.SetPos( 0.f, 6.f, 20.f );
 }
 
+
+
+
 void Game::Draw() {
+
 	XMMATRIX viewProj = camera.ViewProj();
 	float clearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f };
 	d3DImmediateContext->ClearRenderTargetView( renderTargetView, clearColor );
-	d3DImmediateContext->ClearDepthStencilView( depthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0 );
+	d3DImmediateContext->ClearDepthStencilView( depthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0 );	
 	floor.Draw( viewProj, camera.GetPosXM(), lighting.GetPointLights(), d3DImmediateContext );
 	walls.Draw( viewProj, camera.GetPosXM(), lighting.GetPointLights(), d3DImmediateContext );
 	lava.Draw( viewProj, d3DImmediateContext );
