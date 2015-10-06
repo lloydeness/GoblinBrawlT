@@ -62,8 +62,8 @@ private:
 	Camera								camera;
 	Floor								floor;
 	Walls								walls;
-	Lava								lava;
-	FirePlinth							firePlinth;
+	//Lava								lava;
+	//FirePlinth							firePlinth;
 	Lighting							lighting;
 	Goblin								goblin;
 	Goblin								goblin2;
