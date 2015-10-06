@@ -461,7 +461,7 @@ btRigidBody* Skeleton::CreateBoneBody( Bone* bone, Bone* target, btConvexShape* 
 	btRigidBody* body = new btRigidBody( rbInfo );
 	short group = COLLIDE_MASK::PLAYER_BODY;	
 	
-	short mask = COLLIDE_MASK::GROUND|COLLIDE_MASK::FIRE_PLINTH|COLLIDE_MASK::PLAYER_BODY;
+	short mask = COLLIDE_MASK::GROUND | COLLIDE_MASK::PLAYER_BODY;
 	physicsWorld->World()->addRigidBody( body, group, mask );
 	
 	return body;

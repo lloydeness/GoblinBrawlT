@@ -441,14 +441,17 @@ bool Game::LoadGameObjects() {
 		fprintf( stderr, "Error initiating lighting" );
 		return false;
 	}
+	
 	if( !floor.Init( &loader, d3DDevice, physicsWorld ) ) {
 		fprintf( stderr, "Error initiating floor" );
 		return false;
 	}
+	
 	if( !walls.Init( &loader, d3DDevice ) ) {
 		fprintf( stderr, "Error initiating walls" );
 		return false;
 	}
+	/*
 	if( !lava.Init( &loader, d3DDevice ) ) {
 		fprintf( stderr, "Error initiating lava" );
 		return false;
@@ -457,6 +460,8 @@ bool Game::LoadGameObjects() {
 		fprintf( stderr, "Error initiating fire plinth" );
 		return false;
 	}
+	*/
+
 	if( !goblin.Init( &loader, d3DDevice, kbTracker.get(), gamePad.get() , Goblin::PLAYER_1, physicsWorld ) ) {
 		fprintf( stderr, "Error initiating goblin" );
 		return false;
@@ -480,37 +485,7 @@ void Game::Update( float dt ) {
 
 	physicsWorld->Update(dt);
 	physicsWorld->RunDemo();
-	
 
-
-
-	/*
-
-	int something1 = goblin1Collision->getNumCollisionObjects();
-	int something2 = goblin2Collision->getNumCollisionObjects();
-
-	
-	PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*goblin1Collision->getCollisionObjectArray().at(1));
-	goblin1Collision->contactTest(goblin1Collision->getCollisionObjectArray().at(1), resultCallback);
-
-	//collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(1), collisionworld->getCollisionObjectArray().at(26), resultCallback);
-
-
-	if (resultCallback.hit)
-	{
-
-		int dosomething = 5;
-
-	}
-	
-	
-
-	*/
-
-
-
-	
-//	collisionworld->contactPairTest(gob1, gob2, callback);
 	camera.Update( dt );
 	camera.SetPos( 0.f, 6.f, 20.f );
 }
@@ -526,8 +501,8 @@ void Game::Draw() {
 	d3DImmediateContext->ClearDepthStencilView( depthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0 );	
 	floor.Draw( viewProj, camera.GetPosXM(), lighting.GetPointLights(), d3DImmediateContext );
 	walls.Draw( viewProj, camera.GetPosXM(), lighting.GetPointLights(), d3DImmediateContext );
-	lava.Draw( viewProj, d3DImmediateContext );
-	firePlinth.Draw( viewProj, camera.GetPosXM(), lighting.GetPointLights(), d3DImmediateContext );
+	//lava.Draw( viewProj, d3DImmediateContext );
+	//firePlinth.Draw( viewProj, camera.GetPosXM(), lighting.GetPointLights(), d3DImmediateContext );
 	goblin.Draw( viewProj, camera.GetPosXM(), lighting.GetPointLights(), d3DImmediateContext );
 	goblin2.Draw(viewProj, camera.GetPosXM(), lighting.GetPointLights(), d3DImmediateContext);
 #ifdef PHYSICS_DEBUG_MODE

@@ -187,21 +187,68 @@ void Goblin::Update( float dt ) {
 
 	int size = collisionworld->getNumCollisionObjects();
 
-	PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*collisionworld->getCollisionObjectArray().at(26));
-	
-	
-	//collisionworld->contactTest(collisionworld->getCollisionObjectArray().at(13), resultCallback);
 
-	collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(26), collisionworld->getCollisionObjectArray().at(27), resultCallback);
+	if (player == PLAYER_1)
+	{
+		for (int i = 18; i < 21; i++)
+		{
+			PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*collisionworld->getCollisionObjectArray().at(46));
 
-	if (resultCallback.hit)
+
+			//collisionworld->contactTest(collisionworld->getCollisionObjectArray().at(i), resultCallback);
+
+			collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(46), collisionworld->getCollisionObjectArray().at(i), resultCallback);
+
+
+
+			if (resultCallback.hit)
+			{
+
+				XMFLOAT4 goblinPos;
+				goblinPos = XMFLOAT4(0.f, 4.f, 0.f, 1.0f);
+				XMVECTOR xmVectorPos = XMLoadFloat4(&goblinPos);
+				SetPos(xmVectorPos);
+
+
+			}
+		}
+	
+		
+
+			
+	}
+	else
 	{
 
-		int dosomething = 5;
+
+		for (int i = 40; i < 43; i++)
+		{
+			PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*collisionworld->getCollisionObjectArray().at(24));
+
+
+			//collisionworld->contactTest(collisionworld->getCollisionObjectArray().at(i), resultCallback);
+
+			collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(24), collisionworld->getCollisionObjectArray().at(i), resultCallback);
+
+
+
+			if (resultCallback.hit)
+			{
+				XMFLOAT4 goblinPos;
+				goblinPos = XMFLOAT4(1.f, 5.f, 10.f, 1.0f);
+				XMVECTOR xmVectorPos = XMLoadFloat4(&goblinPos);
+				SetPos(xmVectorPos);
+			}
+		}
 
 	}
+
+
+
 	
-	//btColl
+
+	
+
 	UpdateModelTransforms();
 	}
 }
