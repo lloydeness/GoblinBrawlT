@@ -10,6 +10,7 @@
 #include "PhysicsWorld.h"
 #include "Bullet/BulletDynamics/Character/btKinematicCharacterController.h"
 #include "Bullet/BulletCollision/CollisionDispatch/btGhostObject.h"
+#include "Sound.h"
 
 #include "SharedResources.h"
 
@@ -199,6 +200,7 @@ void Goblin::Update( float dt ) {
 					SetPos(xmVectorPos);
 					health--;
 					shouldReset = true;
+					Sound::Play(GETHIT);
 				}
 			}			
 		}
@@ -217,6 +219,7 @@ void Goblin::Update( float dt ) {
 					SetPos(xmVectorPos);
 					health--;
 					shouldReset = true;
+					Sound::Play(GETHIT);
 				}
 		
 			}

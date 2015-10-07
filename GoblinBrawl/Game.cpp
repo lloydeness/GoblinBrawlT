@@ -12,6 +12,7 @@
 #include "SharedResources.h"
 #include "Skeleton.h"
 #include "Bullet/BulletCollision/CollisionDispatch/btCollisionWorld.h"
+#include "Sound.h"
 
 
 #define DISPLAY_FPS
@@ -86,8 +87,7 @@ bool Game::Init() {
 		return false;
 	}
 	
-	//goblin1Collision = goblin.getCollisionworld();
-	//goblin2Collision = goblin2.getCollisionworld();
+
 	return true;
 }
 
@@ -433,6 +433,7 @@ float Game::AspectRatio() {
 }
 
 bool Game::LoadGameObjects() {
+	Sound::Init();
 	SharedResources::Init( d3DDevice );
 	physicsWorld->SetupDemo();
 	ModelLoader loader( d3DDevice, "./art/models/", "/art/textures/" );
@@ -471,7 +472,8 @@ bool Game::LoadGameObjects() {
 		fprintf(stderr, "Error initiating goblin");
 		return false;
 	}
-	
+	Sound::Play(MUSIC);
+
 	return true;
 }
 
