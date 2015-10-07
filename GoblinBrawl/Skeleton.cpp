@@ -527,7 +527,7 @@ void Skeleton::CreateAllJoints() {
 	btScalar debugSwingSpan1( 0.001 );// XM_PIDIV4;
 	btScalar debugSwingSpan2( 0.001 );// XM_PIDIV2;
 	btScalar debugTwistSpan( 0.003 );// XM_PIDIV2;
-	btScalar debugSoftness( 1.f );
+	btScalar debugSoftness( 0.1f );
 	btScalar debugBiasFactor( 0.3f );
 	btScalar debugRelaxationFactor( 1.0f );
 

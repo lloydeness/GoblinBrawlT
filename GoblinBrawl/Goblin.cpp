@@ -101,20 +101,10 @@ bool Goblin::Init( ModelLoader* modelLoader, ID3D11Device* device, Keyboard::Key
 	controller->setFallSpeed( btScalar( fallSpeed ) );
 	controller->setJumpSpeed( btScalar( jumpSpeed ) );
 	controller->setMaxJumpHeight( btScalar( maxJumpHeight ) );
-	//physicsWorld->World()->addCollisionObject( ghostObject, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter|btBroadphaseProxy::DefaultFilter );
-	
-
-	//physicsWorld->World()->addCollisionObject(ghostObject, COLLIDE_MASK::PLAYER_CONTROLLER, COLLIDE_MASK::GROUND);
-	
+	//physicsWorld->World()->addCollisionObject( ghostObject, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter|btBroadphaseProxy::DefaultFilter );	
 	physicsWorld->World()->addCollisionObject(ghostObject, COLLIDE_MASK::PLAYER_CONTROLLER, COLLIDE_MASK::PLAYER_BODY | COLLIDE_MASK::FIRE_PLINTH | COLLIDE_MASK::GROUND);
-	
-
 	physicsWorld->World()->addAction( controller );
-
 	collisionworld = physicsWorld->World()->getCollisionWorld();
-
-	
-
 	modelControllerOffset = XMMatrixTranslation( 0.f, -(controllerHeight*0.5f+controllerWidth), 0.f ); // offset y by height and width because width is the sphere on the end of the capsule
 
 	// Create Physics Skelton
@@ -172,85 +162,76 @@ void XM_CALLCONV Goblin::Draw( FXMMATRIX viewProj, FXMVECTOR cameraPos, std::vec
 
 void Goblin::Update( float dt ) {
 	
-	if (isAlive == true)
-	{
-	fprintf( stdout, "DT : %f, Pos: %3.2f %3.2f %3.2f\n", dt, pos.r[3].m128_f32[0], pos.r[3].m128_f32[1], pos.r[3].m128_f32[2] );
-	UpdateActions();
-	fsm->Update( dt );
-	skeleton->SetRootTransform( GetWorld() );
-	skeleton->Update( dt );
-	// not used right now and slows framerate
-	//animController.Interpolate( dt );
-
-	
-	collisionworld->performDiscreteCollisionDetection();
-
-	int size = collisionworld->getNumCollisionObjects();
-
-
-	if (player == PLAYER_1)
-	{
-		for (int i = 18; i < 21; i++)
-		{
-			PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*collisionworld->getCollisionObjectArray().at(46));
-
-
-			//collisionworld->contactTest(collisionworld->getCollisionObjectArray().at(i), resultCallback);
-
-			collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(46), collisionworld->getCollisionObjectArray().at(i), resultCallback);
-
-
-
-			if (resultCallback.hit)
-			{
-
-				XMFLOAT4 goblinPos;
-				goblinPos = XMFLOAT4(0.f, 4.f, 0.f, 1.0f);
-				XMVECTOR xmVectorPos = XMLoadFloat4(&goblinPos);
-				SetPos(xmVectorPos);
-
-
-			}
-		}
-	
 		
+	shouldReset = false;
+		fprintf( stdout, "DT : %f, Pos: %3.2f %3.2f %3.2f\n", dt, pos.r[3].m128_f32[0], pos.r[3].m128_f32[1], pos.r[3].m128_f32[2] );
+		UpdateActions();
+		fsm->Update( dt );
+		skeleton->SetRootTransform( GetWorld() );
+		skeleton->Update( dt );
+		// not used right now and slows framerate
+		//animController.Interpolate( dt );
 
-			
-	}
-	else
-	{
+	
+		collisionworld->performDiscreteCollisionDetection();
+
+		// delete me, just checking how many collisions their are
+		int size = collisionworld->getNumCollisionObjects();
+
+	
+	
 
 
-		for (int i = 40; i < 43; i++)
+		if (player == PLAYER_1)
 		{
-			PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*collisionworld->getCollisionObjectArray().at(24));
-
-
-			//collisionworld->contactTest(collisionworld->getCollisionObjectArray().at(i), resultCallback);
-
-			collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(24), collisionworld->getCollisionObjectArray().at(i), resultCallback);
-
-
-
-			if (resultCallback.hit)
+			for (int i = 4; i < 21; i++)
 			{
-				XMFLOAT4 goblinPos;
-				goblinPos = XMFLOAT4(1.f, 5.f, 10.f, 1.0f);
-				XMVECTOR xmVectorPos = XMLoadFloat4(&goblinPos);
-				SetPos(xmVectorPos);
+				PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*collisionworld->getCollisionObjectArray().at(46));
+				//collisionworld->contactTest(collisionworld->getCollisionObjectArray().at(i), resultCallback);
+				collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(46), collisionworld->getCollisionObjectArray().at(i), resultCallback);
+				//if the collision happens do something
+				if (resultCallback.hit)
+				{
+
+					XMFLOAT4 goblinPos;
+					goblinPos = XMFLOAT4(-3.f, 4.f, 10.f, 1.0f);
+					XMVECTOR xmVectorPos = XMLoadFloat4(&goblinPos);
+					SetPos(xmVectorPos);
+					health--;
+					shouldReset = true;
+				}
+			}			
+		}
+		else
+		{
+			for (int i = 25; i < 43; i++)
+			{
+				PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*collisionworld->getCollisionObjectArray().at(24));
+				collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(24), collisionworld->getCollisionObjectArray().at(i), resultCallback);
+				//if the collision happens do something
+				if (resultCallback.hit)
+				{
+					XMFLOAT4 goblinPos;
+					goblinPos = XMFLOAT4(3.f, 5.f, 5.f, 1.0f);
+					XMVECTOR xmVectorPos = XMLoadFloat4(&goblinPos);
+					SetPos(xmVectorPos);
+					health--;
+					shouldReset = true;
+				}
+		
 			}
+
 		}
 
-	}
+		if (health < 1)
+		{
 
-
-
-	
-
-	
-
-	UpdateModelTransforms();
-	}
+		}
+		else
+		{
+			UpdateModelTransforms();
+		}
+			
 }
 
 
@@ -291,10 +272,34 @@ void Goblin::UpdateController( float dt ) {
 
 void Goblin::UpdateModelTransforms() {
 	btTransform controllerTransform = ghostObject->getWorldTransform();
+	
+	if (shouldReset ==true)
+	{
+		player;
+	
+		if (player == PLAYER_2)
+		{
+			//changes the position of player 2
+			btVector3 btTransTemp = btVector3(btScalar(3), btScalar(50), btScalar(3));
+			controllerTransform.setOrigin(btTransTemp);
+			ghostObject->setWorldTransform(controllerTransform);
+		
+		}
+		else if (player == PLAYER_1)
+		{
+			//changes the position of player 1
+			btVector3 btTransTemp = btVector3(btScalar(-3), btScalar(50), btScalar(3));
+			controllerTransform.setOrigin(btTransTemp);
+			ghostObject->setWorldTransform(controllerTransform);
+			
+		}
+	}	
 	btVector3 btPos = controllerTransform.getOrigin();
 	XMVECTOR dxPos = XMLoadFloat4( &XMFLOAT4( btPos.x(), btPos.y(), btPos.z(), 1.f ) );
 	dxPos = XMVector3Transform( dxPos, modelControllerOffset );
-	SetPos( dxPos );
+	SetPos(dxPos);
+
+
 	btMatrix3x3 btRot = controllerTransform.getBasis().transpose();
 	XMMATRIX dxMat = XMMATRIX(
 		btRot[0].x(), btRot[0].y(), btRot[0].z(), 0,
@@ -707,8 +712,3 @@ bool Goblin::getLifeStatus()
 	return isAlive;
 }
 
-Skeleton* Goblin::getSkeleton()
-{
-
-	return skeleton;
-}
