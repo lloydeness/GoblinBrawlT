@@ -187,7 +187,6 @@ void Goblin::Update( float dt ) {
 			for (int i = 4; i < 21; i++)
 			{
 				PlayerContactResultCallback resultCallback = PlayerContactResultCallback(*collisionworld->getCollisionObjectArray().at(46));
-				//collisionworld->contactTest(collisionworld->getCollisionObjectArray().at(i), resultCallback);
 				collisionworld->contactPairTest(collisionworld->getCollisionObjectArray().at(46), collisionworld->getCollisionObjectArray().at(i), resultCallback);
 				//if the collision happens do something
 				if (resultCallback.hit)
