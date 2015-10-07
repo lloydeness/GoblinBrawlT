@@ -43,7 +43,7 @@ public:
 	DirectX::FXMMATRIX XM_CALLCONV GetWorld();
 	void ResetActions();
 	bool getLifeStatus();
-	Skeleton* getSkeleton();
+
 private:
 	struct Actions {
 		bool Forward;
@@ -141,6 +141,7 @@ private:
 	float										attackTimer;
 	int											health;
 	bool										isAlive;
+	bool										shouldReset;
 };
 
 struct PlayerContactResultCallback : public btCollisionWorld::ContactResultCallback {
